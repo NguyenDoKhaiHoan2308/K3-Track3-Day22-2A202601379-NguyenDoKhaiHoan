@@ -19,6 +19,18 @@ def test_dpo_loss_is_stable_for_extreme_margin() -> None:
     assert loss == pytest.approx(0.0)
 
 
+def test_dpo_loss_is_finite_with_equal_reference_logps() -> None:
+    loss = dpo_loss(
+        np.array([-0.5]),
+        np.array([-1.5]),
+        np.array([-1.0]),
+        np.array([-1.0]),
+        beta=0.1,
+    )
+    assert loss == pytest.approx(np.logaddexp(0.0, -0.1))
+    assert np.isfinite(loss)
+
+
 def test_orpo_loss() -> None:
     loss = orpo_loss(np.array([1.0]), np.array([-0.5]), np.array([-1.5]), lambda_orpo=0.1)
     assert loss > 1.0
